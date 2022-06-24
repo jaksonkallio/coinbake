@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/neiltcox/coinbake/database"
+	"github.com/jaksonkallio/coinbake/database"
 	"gorm.io/gorm"
 )
 

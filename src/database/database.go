@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/neiltcox/coinbake/config"
+	"github.com/jaksonkallio/coinbake/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

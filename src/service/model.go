@@ -3,7 +3,7 @@ package service
 import (
 	"log"
 
-	"github.com/neiltcox/coinbake/database"
+	"github.com/jaksonkallio/coinbake/database"
 )
 
 func InitModels() {

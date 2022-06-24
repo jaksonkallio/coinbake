@@ -6,9 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/neiltcox/coinbake/config"
-	"github.com/neiltcox/coinbake/database"
-	"github.com/neiltcox/coinbake/service"
+	"github.com/jaksonkallio/coinbake/config"
+	"github.com/jaksonkallio/coinbake/database"
+	"github.com/jaksonkallio/coinbake/service"
 )
 
 func main() {

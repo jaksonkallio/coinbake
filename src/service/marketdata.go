@@ -9,8 +9,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/neiltcox/coinbake/config"
-	"github.com/neiltcox/coinbake/database"
+	"github.com/jaksonkallio/coinbake/config"
+	"github.com/jaksonkallio/coinbake/database"
 )
 
 type ListingsResponse struct {

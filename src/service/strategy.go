@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/neiltcox/coinbake/database"
+	"github.com/jaksonkallio/coinbake/database"
 	"gorm.io/gorm"
 )
 
