@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	krakenapi "github.com/beldur/kraken-go-api-client"
@@ -43,22 +44,46 @@ func (exchangeKraken *ExchangeKraken) ValidateConnection(portfolio *Portfolio) V
 	}
 }
 
-func (exchangeKraken *ExchangeKraken) SupportedAssets(portfolio *Portfolio) (map[string]bool, error) {
+func (exchangeKraken *ExchangeKraken) SupportedAssets(portfolio *Portfolio) (map[string]*Asset, error) {
+	supportedAssets := make(map[string]*Asset, 0)
+
 	api := krakenapi.New(portfolio.ApiKey, portfolio.ApiSecret)
-	_, err := api.Query("Assets", map[string]string{})
+	assetsResponseRaw, err := api.Query("Assets", map[string]string{})
 	if err != nil {
-		return make(map[string]bool, 0), err
+		return supportedAssets, err
 	}
 
-	/*
-		assetsResponse := assetsResponseRaw.([]map[string]interface{})
-		supportedAssets := make(map[string]bool, 0)
+	assetsResponse := assetsResponseRaw.(map[string]interface{})
 
-		for _, asset := range assetsResponse {
-			//supportedAssets[asset["symbol"]]
-		}*/
+	for symbol, assetRaw := range assetsResponse {
+		var altSymbol string
+		exchangeAsset := assetRaw.(map[string]interface{})
+		foundAsset := FindAssetBySymbol(symbol)
 
-	return map[string]bool{}, nil
+		// If asset is not found, check by `altname`.
+		if foundAsset == nil {
+			altSymbolRaw, hasAltSymbol := exchangeAsset["altname"]
+
+			// An alt name is provided, try finding the asset by alt symbol.
+			if hasAltSymbol {
+				altSymbol = altSymbolRaw.(string)
+				foundAsset = FindAssetBySymbol(altSymbol)
+			}
+		}
+
+		// Only add to the list of supported assets if we were able to find an asset.
+		if foundAsset != nil {
+			supportedAssets[foundAsset.Symbol] = foundAsset
+		} else {
+			log.Printf("No asset found for symbol: %s", symbol)
+
+			if len(altSymbol) > 0 {
+				log.Printf("No asset found for alt symbol: %s", symbol)
+			}
+		}
+	}
+
+	return supportedAssets, nil
 }
 
 func (exchangeKraken *ExchangeKraken) HoldingSummary(portfolio *Portfolio) (HoldingSummary, error) {

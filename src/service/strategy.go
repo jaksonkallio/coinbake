@@ -43,7 +43,7 @@ type Strategy struct {
 
 // A single line item in the strategy calculation.
 type RebalanceMovement struct {
-	Asset   Asset
+	Asset   *Asset
 	Balance float64
 	// The absolute weight value given to this line item.
 	WeightValue float64
@@ -55,7 +55,7 @@ type RebalanceMovement struct {
 
 type RebalanceMovementSummary struct {
 	Movements         []*RebalanceMovement
-	UnsupportedAssets []Asset
+	UnsupportedAssets []*Asset
 }
 
 // Only submit orders with a change in amount of at least this much.
@@ -175,9 +175,9 @@ func (strategy *Strategy) RebalanceMovements(portfolio *Portfolio) (RebalanceMov
 // Which assets should be considered for calculations for a given strategy.
 // Filters out assets unsupported by the exchange.
 // First return are considerable assets, second return are unsupported assets.
-func (strategy *Strategy) considerableAssets(exchange Exchange, portfolio *Portfolio) ([]Asset, []Asset, error) {
+func (strategy *Strategy) considerableAssets(exchange Exchange, portfolio *Portfolio) ([]*Asset, []*Asset, error) {
 	// Which assets to choose from.
-	var eligibleAssets []Asset
+	var eligibleAssets []*Asset
 
 	// Respect our maximum strategy asset count
 	assetCount := strategy.TopAssetCount
@@ -188,9 +188,9 @@ func (strategy *Strategy) considerableAssets(exchange Exchange, portfolio *Portf
 	if assetCount > 0 {
 		// Consider all assets
 		if strategy.WeightingMetric == WeightingMetricMarketCap {
-			eligibleAssets = FindAssetsByMarketCap(assetCount)
+			eligibleAssets = FindAssetsByMarketCap(assetCount, 0)
 		} else if strategy.WeightingMetric == WeightingMetricVolume {
-			eligibleAssets = FindAssetsByVolume(assetCount)
+			eligibleAssets = FindAssetsByVolume(assetCount, 0)
 		} else {
 			return nil, nil, fmt.Errorf("weighting metric %q not yet implemented", strategy.WeightingMetric)
 		}
@@ -198,15 +198,23 @@ func (strategy *Strategy) considerableAssets(exchange Exchange, portfolio *Portf
 		return nil, nil, fmt.Errorf("asset selection method not yet implemented")
 	}
 
+	// Get the supported assets map for this exchange.
+	supportedAssets, err := exchange.SupportedAssets(portfolio)
+	if err != nil {
+		return nil, nil, fmt.Errorf("could not get supported assets: %s", err)
+	}
+
 	// Initialize our resulting asset lists.
-	considerableAssets := make([]Asset, 0)
-	unsupportedAssets := make([]Asset, 0)
+	considerableAssets := make([]*Asset, 0)
+	unsupportedAssets := make([]*Asset, 0)
 
 	// Build the list of unsupported assets.
 	// We must remove the unsupported assets from the weight calculations.
 	// This is because an unsupported asset should not effectively take up any weight.
 	for _, asset := range eligibleAssets {
-		if exchange.SupportsAsset(portfolio, asset) {
+		_, isSupported := supportedAssets[asset.Symbol]
+
+		if isSupported {
 			// Add the eligible asset to the list of assets that we'll include in the calculations.
 			considerableAssets = append(considerableAssets, asset)
 		} else {
@@ -219,7 +227,7 @@ func (strategy *Strategy) considerableAssets(exchange Exchange, portfolio *Portf
 	return considerableAssets, unsupportedAssets, nil
 }
 
-func calculateWeight(asset Asset, metric WeightingMetric, modifier WeightingModifier) float64 {
+func calculateWeight(asset *Asset, metric WeightingMetric, modifier WeightingModifier) float64 {
 	var weight float64
 
 	// Figure the weight value based on the metric.

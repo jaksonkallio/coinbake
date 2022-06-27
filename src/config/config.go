@@ -23,18 +23,26 @@ type MarketData struct {
 	BaseUrl string `yaml:"base_url"`
 }
 
-func LoadConfig(path string) (Config, error) {
+var CurrentConfig Config
+
+func LoadConfig(path string) error {
+	// Reset/blank the current config
+	CurrentConfig = Config{}
+
 	fileContent, err := ioutil.ReadFile(path)
 	if err != nil {
-		return Config{}, err
+		return err
 	}
 
 	var config Config
 
 	err = yaml.Unmarshal(fileContent, &config)
 	if err != nil {
-		return Config{}, err
+		return err
 	}
 
-	return config, nil
+	// Update the current config with the configuration we loaded.
+	CurrentConfig = config
+
+	return nil
 }

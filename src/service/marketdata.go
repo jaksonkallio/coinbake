@@ -34,18 +34,28 @@ type Quote struct {
 }
 
 const (
-	CaptureTopAssetCount int = 100
+	CaptureTopAssetCount int = 200
 )
 
-var marketDataInitialRefresh bool = false
+func MarketDataRefresher(ticks *time.Ticker, stop chan bool) {
+	// Initial market data refresh.
+	refreshMarketData()
 
-func MarketDataInitialRefresh() bool {
-	return marketDataInitialRefresh
+	for {
+		select {
+		case <-stop:
+			return
+		case <-ticks.C:
+			refreshMarketData()
+		}
+	}
 }
 
 // Refreshes all market data.
-func RefreshMarketData(cfg config.Config) {
-	responseBytes, err := marketDataApi(cfg, "cryptocurrency/listings/latest", url.Values{
+func refreshMarketData() {
+	log.Println("Refreshing market data")
+
+	responseBytes, err := marketDataApi("cryptocurrency/listings/latest", url.Values{
 		"start":   []string{"1"},
 		"limit":   []string{fmt.Sprintf("%d", CaptureTopAssetCount)},
 		"convert": []string{"USD"},
@@ -59,33 +69,36 @@ func RefreshMarketData(cfg config.Config) {
 
 	for _, listing := range listingsResponse.Listings {
 		asset := FindAssetBySymbol(listing.Symbol)
+		if asset == nil {
+			asset = CreateAsset(listing.Symbol)
+		}
+
 		asset.MarketCap = uint64(listing.Quotes.USD.MarketCap)
 		asset.Volume = uint64(listing.Quotes.USD.Volume)
 		asset.ApproxPrice = listing.Quotes.USD.Price
 		asset.LastRefreshed = time.Now()
+		asset.Name = listing.Name
 		database.Handle().Save(asset)
 	}
-
-	marketDataInitialRefresh = true
 }
 
-func marketDataApi(cfg config.Config, endpoint string, query url.Values) ([]byte, error) {
-	if len(cfg.MarketData.ApiKey) == 0 {
+func marketDataApi(endpoint string, query url.Values) ([]byte, error) {
+	if len(config.CurrentConfig.MarketData.ApiKey) == 0 {
 		return nil, fmt.Errorf("did not configure a market data API key")
 	}
 
-	if len(cfg.MarketData.BaseUrl) == 0 {
+	if len(config.CurrentConfig.MarketData.BaseUrl) == 0 {
 		return nil, fmt.Errorf("did not configure a market data API base URL")
 	}
 
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s%s", cfg.MarketData.BaseUrl, endpoint), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s%s", config.CurrentConfig.MarketData.BaseUrl, endpoint), nil)
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Set("Accepts", "application/json")
-	req.Header.Add("X-CMC_PRO_API_KEY", cfg.MarketData.ApiKey)
+	req.Header.Add("X-CMC_PRO_API_KEY", config.CurrentConfig.MarketData.ApiKey)
 	req.URL.RawQuery = query.Encode()
 
 	resp, err := client.Do(req)

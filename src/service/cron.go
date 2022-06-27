@@ -13,6 +13,8 @@ type recurringTask struct {
 	Stopper chan bool
 }
 
+// TODO: to be more scalable, messages instructing the execution of recurring tasks should be created by a single producer microservice, and there would be multiple consumer microservices for executing recurring tasks instructions.
+
 func StartRecurringTasks() {
 	log.Println("Starting recurring tasks")
 	recurringTasks := make([]recurringTask, 0)
@@ -22,6 +24,11 @@ func StartRecurringTasks() {
 		recurringTask{
 			Ticker:  time.NewTicker(2 * time.Second),
 			Fn:      PortfolioRefresher,
+			Stopper: make(chan bool),
+		},
+		recurringTask{
+			Ticker:  time.NewTicker(30 * time.Minute),
+			Fn:      MarketDataRefresher,
 			Stopper: make(chan bool),
 		},
 	)

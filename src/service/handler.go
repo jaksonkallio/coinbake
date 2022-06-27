@@ -62,6 +62,28 @@ func GetPortfolios() gin.HandlerFunc {
 	}
 }
 
+func GetAssets() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var page int
+
+		if len(ctx.Query("page")) > 0 {
+			page, _ = strconv.Atoi(ctx.Query("page"))
+		}
+
+		// TODO: support other sorts
+
+		// Get the assets ordered by marketcap
+		assets := FindAssetsByMarketCap(20, page)
+
+		buildStandardResponse(
+			ctx,
+			gin.H{
+				"Assets": assets,
+			},
+		)
+	}
+}
+
 func PostPortfolio() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// TODO: implement

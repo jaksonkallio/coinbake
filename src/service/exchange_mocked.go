@@ -1,5 +1,31 @@
 package service
 
+import "fmt"
+
+type ExchangeMocked struct {
+}
+
+func (exchangeMocked *ExchangeMocked) SupportedAssets(portfolio *Portfolio) (map[string]*Asset, error) {
+	return map[string]*Asset{
+		"BTC":  FindAssetBySymbol("BTC"),
+		"ETH":  FindAssetBySymbol("ETH"),
+		"XMR":  FindAssetBySymbol("XMR"),
+		"BNB":  FindAssetBySymbol("BNB"),
+		"ADA":  FindAssetBySymbol("ADA"),
+		"NANO": FindAssetBySymbol("NANO"),
+	}, nil
+}
+
+// Gets the Exchange object for a given Exchange Connection, which is where the API call logic is.
+func (portfolio *Portfolio) Exchange() (Exchange, error) {
+	exchange, exists := exchanges[portfolio.ExchangeIdentifier]
+	if !exists {
+		return nil, fmt.Errorf("exchange %q is not implemented", portfolio.ExchangeIdentifier)
+	}
+
+	return exchange, nil
+}
+
 func (exchangeMocked *ExchangeMocked) CreateOrder(portfolio *Portfolio, asset string, amount float32) (CreatedOrder, error) {
 	return CreatedOrder{
 		OrderIdentifier: "123456",

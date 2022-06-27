@@ -12,12 +12,12 @@ import (
 )
 
 func main() {
-	config, err := config.LoadConfig("config.yml")
+	err := config.LoadConfig("config.yml")
 	if err != nil {
 		log.Fatalf("could not load config: %s", err)
 	}
 
-	err = database.Connect(config)
+	err = database.Connect()
 	if err != nil {
 		log.Fatalf("could not connect to database: %s", err)
 	}
@@ -28,7 +28,7 @@ func main() {
 	go service.StartRecurringTasks()
 
 	// Run sandbox
-	// sandbox(config)
+	sandbox()
 
 	// Serve the service.
 	go service.Serve()
@@ -47,19 +47,16 @@ func main() {
 }
 
 // TODO: remove all of this junk
-func sandbox(cfg config.Config) {
+func sandbox() {
 	log.Println("Sandbox starting")
 
 	user := service.FindUserByEmailAddress("jaksonkallio@gmail.com")
 
-	//log.Printf("%#v", user)
-
-	//service.RefreshMarketData(cfg)
-
 	portfolios := service.FindPortfoliosByUserId(user.ID)
 	for _, portfolio := range portfolios {
-		log.Printf("exchange conection: %d", portfolio.ID)
-		strategy := service.FindStrategyByPortfolioId(portfolio.ID)
+		log.Printf("portfolio ID: %d", portfolio.ID)
+
+		/*strategy := service.FindStrategyByPortfolioId(portfolio.ID)
 		if strategy == nil {
 			log.Printf("strategy is nil")
 			continue
@@ -78,6 +75,20 @@ func sandbox(cfg config.Config) {
 				rebalanceMovement.ValuationDiff,
 				rebalanceMovement.BalanceDiff(),
 			)
+		}*/
+
+		exchange, err := portfolio.Exchange()
+		if err != nil {
+			log.Fatalf("could not get exchange: %s", err)
+		}
+
+		supportedAssets, err := exchange.SupportedAssets(&portfolio)
+		if err != nil {
+			log.Fatalf("could not get supported assets: %s", err)
+		}
+
+		for symbol := range supportedAssets {
+			log.Printf("supported asset: %s", symbol)
 		}
 	}
 

@@ -11,15 +11,15 @@ import (
 
 var handle *gorm.DB
 
-func Connect(cfg config.Config) error {
-	log.Printf("Connecting to database at %s", cfg.Database.Host)
+func Connect() error {
+	log.Printf("Connecting to database at %s", config.CurrentConfig.Database.Host)
 
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		cfg.Database.Username,
-		cfg.Database.Password,
-		cfg.Database.Host,
-		cfg.Database.Name,
+		config.CurrentConfig.Database.Username,
+		config.CurrentConfig.Database.Password,
+		config.CurrentConfig.Database.Host,
+		config.CurrentConfig.Database.Name,
 	)
 	newHandle, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {

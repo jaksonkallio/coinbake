@@ -18,6 +18,7 @@ const AssetMarketDataExpiry time.Duration = 15 * time.Minute
 
 type Asset struct {
 	gorm.Model
+	Name      string
 	Symbol    string
 	MarketCap uint64
 	Volume    uint64
@@ -31,34 +32,48 @@ type Asset struct {
 	LastRefreshed time.Time
 }
 
-func FindAssetsByMarketCap(limit int) []Asset {
-	assets := []Asset{}
-	database.Handle().Order("market_cap DESC, symbol ASC").Limit(limit).Find(&assets)
+func FindAssetsByMarketCap(limit int, page int) []*Asset {
+	assets := []*Asset{}
+	database.Handle().Offset(limit * page).Order("market_cap DESC, symbol ASC").Limit(limit).Find(&assets)
 	return assets
 }
 
-func FindAssetsByVolume(limit int) []Asset {
-	assets := []Asset{}
-	database.Handle().Order("volume DESC, symbol ASC").Limit(limit).Find(&assets)
+func FindAssetsByVolume(limit int, page int) []*Asset {
+	assets := []*Asset{}
+	database.Handle().Offset(limit * page).Order("volume DESC, symbol ASC").Limit(limit).Find(&assets)
 	return assets
 }
 
-func FindAssetBySymbol(symbol string) Asset {
+func AssetSymbolExists(symbol string) bool {
+	var assetsWithSymbol int64
+	database.Handle().Model(&Asset{}).Where("symbol = ?", symbol).Count(&assetsWithSymbol)
+	return assetsWithSymbol > 0
+}
+
+func CreateAsset(symbol string) *Asset {
+	asset := &Asset{
+		Symbol: symbol,
+	}
+
+	database.Handle().Create(asset)
+
+	return asset
+}
+
+// Finds an asset using a particular symbol, or returns `nil` if no asset exists with symbol.
+func FindAssetBySymbol(symbol string) *Asset {
+	// TODO: introduce some sort of local LRU cache so we don't hit the databse every time.
+
 	symbol = strings.ToUpper(symbol)
 
-	assetsWithSymbol := []Asset{}
+	assetsWithSymbol := []*Asset{}
 	database.Handle().Where("symbol = ?", symbol).Find(&assetsWithSymbol)
 
 	if len(assetsWithSymbol) > 0 {
 		return assetsWithSymbol[0]
 	}
 
-	asset := Asset{
-		Symbol: symbol,
-	}
-	database.Handle().Create(&asset)
-
-	return asset
+	return nil
 }
 
 func (asset *Asset) FreshMarketData() bool {

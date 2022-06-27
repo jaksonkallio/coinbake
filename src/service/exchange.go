@@ -1,9 +1,5 @@
 package service
 
-import (
-	"fmt"
-)
-
 type ExchangeIdentifier string
 
 const (
@@ -28,8 +24,7 @@ type SupportedAsset struct {
 type Exchange interface {
 	CreateOrder(*Portfolio, string, float32) (CreatedOrder, error)
 	Holdings(*Portfolio) (map[string]Holding, error)
-	SupportedAssets(*Portfolio) (map[string]bool, error)
-	SupportsAsset(*Portfolio, Asset) bool
+	SupportedAssets(*Portfolio) (map[string]*Asset, error)
 	ValidateConnection(*Portfolio) ValidateExchangeConnectionResult
 	HoldingSummary(*Portfolio) (HoldingSummary, error)
 }
@@ -50,33 +45,11 @@ type CreatedOrder struct {
 }
 
 type Holding struct {
-	Asset   Asset
+	Asset   *Asset
 	Balance float64
 }
 
 type HoldingSummary struct {
 	// How much the user holds in total.
 	TotalBalanceValuation float64
-}
-
-type ExchangeMocked struct {
-	MockSupportedAssets
-}
-
-func (mockSupportedAssets *MockSupportedAssets) SupportedAssets(portfolio *Portfolio) (map[string]bool, error) {
-	return map[string]bool{
-		"BTC": true,
-		"ETH": true,
-		"XMR": true,
-	}, nil
-}
-
-// Gets the Exchange object for a given Exchange Connection, which is where the API call logic is.
-func (portfolio *Portfolio) Exchange() (Exchange, error) {
-	exchange, exists := exchanges[portfolio.ExchangeIdentifier]
-	if !exists {
-		return nil, fmt.Errorf("exchange %q is not implemented", portfolio.ExchangeIdentifier)
-	}
-
-	return exchange, nil
 }

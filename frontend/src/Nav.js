@@ -11,6 +11,7 @@ export default function Nav(props) {
 				<div className='links'>
 					<NavLink to="/portfolios" activeClassName="active"><Icon name="chart-pie"/>Portfolios</NavLink>
 					<NavLink to="/activity" activeClassName="active"><Icon name="flag"/>Activity</NavLink>
+					<NavLink to="/assets" activeClassName="active"><Icon name="pixels"/>Assets</NavLink>
 				</div>
 			</InlineLayout>
 		</div>
