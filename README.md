@@ -1,5 +1,10 @@
 # Coinbake
-Build your own cryptocurrency index fund! Connects to your exchange accounts and automatically buys/sells cryptos according to the weights you set.
+Build your own cryptocurrency index fund! Connects to your exchange accounts and automatically buys/sells cryptos based on an automatic weighting by market cap or volume.
+
+## Supported Exchanges
+- Kraken
+
+*...more coming in the future!*
 
 ## Authentication
 Uses Google account OAuth for authentication. More OAuth providers will be available in the future.
