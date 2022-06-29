@@ -201,7 +201,7 @@ textarea,
 	top: 50%;
 	transform: translate(-50%, -50%);
 	width: calc(100% - 20px);
-	max-width: 600px;
+	max-width: 400px;
 	max-height: calc(100% - 20px);
 	pointer-events: auto;
 	overflow-y: auto;
@@ -294,10 +294,10 @@ textarea,
 }
 .button.processing .spinner {
 	position: absolute;
-	height: 20px;
-	width: 20px;
-	left: calc(50% - 10px);
-	top: calc(50% - 10px);
+	height: 14px;
+	width: 14px;
+	left: calc(50% - 7px);
+	top: calc(50% - 7px);
 	animation: SpinnerRotate 750ms normal infinite linear;
 }
 .button .icon {

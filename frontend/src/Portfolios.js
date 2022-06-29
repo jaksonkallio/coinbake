@@ -4,9 +4,13 @@ import StyledText from "./StyledText";
 import Stack from "./Stack";
 import InlineLayout from "./InlineLayout";
 import contactEndpoint from './contactEndpoint';
+import Modal from "./Modal";
+import CreatePortfolio from "./CreatePortfolio";
+import Button from "./Button";
 
 export default function Portfolios(props){
 	const [portfolios, setPortfolios] = useState([]);
+	const [createPortfolioIntent, setCreatePortfolioIntent] = useState(false);
 
 	async function loadPortfolios(){
 		try {
@@ -24,14 +28,22 @@ export default function Portfolios(props){
 		[]
 	);
 
+	// TODO: show a message if there are no portfolios.
 	return (
 		<Stack>
+			{
+				createPortfolioIntent && (
+					<Modal onClose={ () => { setCreatePortfolioIntent(false); }}>
+						<CreatePortfolio/>
+					</Modal>
+				)
+			}
 			<InlineLayout>
 				{
 					portfolios.map(
 						(portfolio) => {
 							return (
-								<React.Fragment key={portfolio.id}>
+								<React.Fragment key={portfolio.ID}>
 									<PortfolioTile portfolio={portfolio} />
 								</React.Fragment>
 							);
@@ -39,6 +51,7 @@ export default function Portfolios(props){
 					)
 				}
 			</InlineLayout>
+			<Button label="Create Portfolio" onClick={() => { setCreatePortfolioIntent(true); }}/>
 		</Stack>
 	);
 }
