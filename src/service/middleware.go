@@ -1,13 +1,24 @@
 package service
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
 
-const AuthUserIdKey = "auth_user_id"
+	"github.com/gin-gonic/contrib/sessions"
+	"github.com/gin-gonic/gin"
+)
+
+const AuthUserIdKey string = "auth-user-id"
 
 func Authenticate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// TODO: don't hardcode, authenticate
-		ctx.Set(AuthUserIdKey, 1)
+		session := sessions.Default(ctx)
+		userId := session.Get(UserIdSessionKey).(uint)
+		if userId == 0 {
+			buildFailureResponse(ctx, http.StatusUnauthorized, "Not logged in")
+			return
+		}
+
+		ctx.Set(AuthUserIdKey, int(userId))
 
 		ctx.Next()
 	}

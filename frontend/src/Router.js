@@ -5,6 +5,7 @@ import Portfolios from "./Portfolios";
 import Nav from "./Nav";
 import Portfolio from "./Portfolio";
 import Assets from "./Assets";
+import Login from "./Login";
 
 export default function Router(props){
 	return (
@@ -14,6 +15,7 @@ export default function Router(props){
 				<Route path='/assets' component={Assets} />
 				<Route path='/portfolios' component={Portfolios} />
 				<Route path='/portfolio/:id' component={Portfolio} />
+				<Route path='/login' component={Login} />
 				<Route path='/' component={Portfolios} />
 			</Switch>
 		</HashRouter>

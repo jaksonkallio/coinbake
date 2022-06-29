@@ -28,7 +28,7 @@ func main() {
 	go service.StartRecurringTasks()
 
 	// Run sandbox
-	sandbox()
+	//sandbox()
 
 	// Serve the service.
 	go service.Serve()

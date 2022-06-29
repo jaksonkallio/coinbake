@@ -251,32 +251,54 @@ textarea,
 .button,
 .dropdown {
 	display: inline-block;
-	padding: 5px 10px;
-	background: #ecf0f1;
-	border-radius: 5px;
+	height: 30px;
+	line-height: 30px;
+	padding: 0px 10px;
+	background: #9381ff;
+	font-size: 0.9em;
+	border-radius: 4px;
+	color: #FFFFFF;
 	cursor: pointer;
 	user-select: none;
 	text-align: center;
-	transition: all 50ms;
+	transition: all 100ms;
+	transform: scale(1.0);
 	outline: none;
-	border: 1px solid #bdc3c7;
-	box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.15);
+	border: none;
+}
+.button.subtle,
+.dropdown {
+	background: #949697;
+	color: #FFFFFF;
 }
 .dropdown {
-	padding: 4px 10px;
+	padding: 9px 18px;
 }
 .button:active,
 .button:focus,
 .button:hover,
+.button.processing {
+	background: #6247aa;
+}
 .dropdown:active,
 .dropdown:focus,
 .dropdown:hover {
-	border: 1px solid #3498db;
-	background: #EAF4FB;
+	background: #BADAC7;
 }
 .button:active,
 .button:focus {
-	transform: scale(0.98);
+	transform: scale(0.95);
+}
+.button.processing {
+	color: rgba(255, 255, 255, 0.2);
+}
+.button.processing .spinner {
+	position: absolute;
+	height: 20px;
+	width: 20px;
+	left: calc(50% - 10px);
+	top: calc(50% - 10px);
+	animation: SpinnerRotate 750ms normal infinite linear;
 }
 .button .icon {
 	display: inline-block;
