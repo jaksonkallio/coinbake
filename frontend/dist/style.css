@@ -16,7 +16,7 @@ div {
 
 /* -- Body -- */
 body {
-	background: #FFFFFF;
+	background: #f8f9fa;
 }
 
 
@@ -329,6 +329,7 @@ textarea,
 
 /* -- Content Box -- */
 .content_box {
+	background: #ffffff;
 	border: 1px solid #edf2f4;
 	border-radius: 5px;
 	transition: all 100ms;
@@ -338,6 +339,7 @@ a:hover > .content_box {
 	border: 1px solid #6247aa;
 	box-shadow: 0px 1px 4px 0px rgb(0 0 0 / 4%);
 }
+
 
 /* -- Error Message */
 .error_message {
