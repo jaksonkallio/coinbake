@@ -8,7 +8,7 @@ const ProcessingStatus = {
 	PROCESSING: 2
 };
 
-export default function Button(props){
+export default function ActionButton(props){
 	const [processing_status, setProcessingStatus] = useState(ProcessingStatus.IDLE);
 
 	async function onClick(){
@@ -30,7 +30,7 @@ export default function Button(props){
 		}
 	}
 
-	let classes = ['button'];
+	let classes = [];
 
 	if(['standard', 'subtle', 'text'].includes(props.styling)){
 		classes.push(props.styling);
@@ -72,16 +72,16 @@ export default function Button(props){
 				{button_content}
 			</Link>
 		);
-	}else{
+	}else {
 		return (
-			<a className={classes.join(' ')} onClick={onClick}>
+			<button className={classes.join(' ')} onClick={onClick}>
 				{
 					(processing_status == ProcessingStatus.PROCESSING &&
 						<img className='spinner' src='./static/img/spinner.svg'/>
 					)
 				}
 				{button_content}
-			</a>
+			</button>
 		);
 	}
 }

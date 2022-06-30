@@ -3,6 +3,8 @@ package service
 import (
 	"log"
 	"time"
+
+	"github.com/jaksonkallio/coinbake/config"
 )
 
 var stopRecurringTasks chan bool = make(chan bool)
@@ -19,15 +21,22 @@ func StartRecurringTasks() {
 	log.Println("Starting recurring tasks")
 	recurringTasks := make([]recurringTask, 0)
 
+	devRecurringTaskMultiplier := time.Duration(1)
+	if config.IsDev() {
+		// All tasks in dev env should be scheduled for this many times longer than a non-dev environment.
+		devRecurringTaskMultiplier = time.Duration(20)
+	}
+
 	recurringTasks = append(
 		recurringTasks,
 		recurringTask{
-			Ticker:  time.NewTicker(2 * time.Second),
+			Ticker:  time.NewTicker(2 * time.Second * devRecurringTaskMultiplier),
 			Fn:      PortfolioRefresher,
 			Stopper: make(chan bool),
 		},
 		recurringTask{
-			Ticker:  time.NewTicker(30 * time.Minute),
+			// TODO:
+			Ticker:  time.NewTicker(30 * time.Minute * devRecurringTaskMultiplier),
 			Fn:      MarketDataRefresher,
 			Stopper: make(chan bool),
 		},

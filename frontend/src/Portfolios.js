@@ -6,7 +6,7 @@ import InlineLayout from "./InlineLayout";
 import contactEndpoint from './contactEndpoint';
 import Modal from "./Modal";
 import CreatePortfolio from "./CreatePortfolio";
-import Button from "./Button";
+import ActionButton from "./ActionButton";
 
 export default function Portfolios(props){
 	const [portfolios, setPortfolios] = useState([]);
@@ -51,7 +51,7 @@ export default function Portfolios(props){
 					)
 				}
 			</InlineLayout>
-			<Button label="Create Portfolio" onClick={() => { setCreatePortfolioIntent(true); }}/>
+			<ActionButton label="Create Portfolio" onClick={() => { setCreatePortfolioIntent(true); }}/>
 		</Stack>
 	);
 }

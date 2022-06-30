@@ -34,6 +34,7 @@ input,
 select,
 select option,
 input,
+button,
 textarea,
 .text {
 	font-family: 'Barlow', sans-serif;
@@ -127,7 +128,8 @@ textarea,
 	font-size: 1.1em;
 }
 .text.note {
-	color: #BFC3C7;
+	opacity: 0.6;
+	font-size: 0.9em;
 }
 .text.paragraph {
 	line-height: 1.5em;
@@ -248,14 +250,13 @@ textarea,
 
 
 /* -- Button / Dropdown -- */
-.button,
-.dropdown {
+button {
 	display: inline-block;
-	height: 30px;
-	line-height: 30px;
-	padding: 0px 10px;
+	height: 40px;
+	line-height: 40px;
+	padding: 0px 20px;
 	background: #9381ff;
-	font-size: 0.9em;
+	font-size: 1em;
 	border-radius: 4px;
 	color: #FFFFFF;
 	cursor: pointer;
@@ -266,33 +267,22 @@ textarea,
 	outline: none;
 	border: none;
 }
-.button.subtle,
-.dropdown {
+button.subtle {
 	background: #949697;
 	color: #FFFFFF;
 }
-.dropdown {
-	padding: 9px 18px;
-}
-.button:active,
-.button:focus,
-.button:hover,
-.button.processing {
+button:active,
+button:hover,
+button.processing {
 	background: #6247aa;
 }
-.dropdown:active,
-.dropdown:focus,
-.dropdown:hover {
-	background: #BADAC7;
-}
-.button:active,
-.button:focus {
+button:active {
 	transform: scale(0.95);
 }
-.button.processing {
+button.processing {
 	color: rgba(255, 255, 255, 0.2);
 }
-.button.processing .spinner {
+button.processing .spinner {
 	position: absolute;
 	height: 14px;
 	width: 14px;
@@ -300,14 +290,33 @@ textarea,
 	top: calc(50% - 7px);
 	animation: SpinnerRotate 750ms normal infinite linear;
 }
-.button .icon {
+button .icon {
 	display: inline-block;
 	font-size: 1.2em;
 }
-.button.full {
+button.full {
 	width: 100%;
 }
 
+
+/* -- Input -- */
+input[type="text"] {
+	height: 40px;
+	line-height: 40px;
+	padding: 0px 5px;
+	width: 100%;
+	border-radius: 4px;
+	border: 1px solid #BDC1C3;
+	box-shadow: 0px 0px 3px 0px rgba(98, 71, 170, 0.0);
+	outline: none;
+	transition: all 100ms;
+}
+input[type="text"]:focus,
+input[type="text"]:active {
+	box-shadow: 0px 0px 0px 2px rgba(98, 71, 170, 0.2);
+	border: 1px solid #6247aa;
+	outline: none;
+}
 
 /* -- Inline Layout -- */
 .inline_layout {
@@ -343,11 +352,9 @@ a:hover > .content_box {
 
 /* -- Error Message */
 .error_message {
-	padding: 20px;
-	border-radius: 10px;
-	border: 2px solid #d00000;
-	color: #d00000;
+	color: #c9184a;
 	text-align: center;
+	animation: EmphasizeAppear 200ms forwards;
 }
 
 
@@ -385,5 +392,16 @@ a:hover > .content_box {
 	}
 	100% {
 		transform: rotateZ(1turn);
+	}
+}
+
+@keyframes EmphasizeAppear {
+	0% {
+		opacity: 0;
+		transform: scale(1.1);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1.0);
 	}
 }

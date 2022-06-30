@@ -6,7 +6,7 @@ import Stack from './Stack';
 import CurrencyFormat from 'react-currency-format';
 import StyledText from './StyledText';
 import List from './List';
-import Button from './Button';
+import ActionButton from './ActionButton';
 
 export default function Login(props){
 
@@ -17,7 +17,7 @@ export default function Login(props){
 
 	return (
 		<Stack>
-			<Button label="Login with Google" onClick={startLoginFlow}/>
+			<ActionButton label="Login with Google" onClick={startLoginFlow}/>
 		</Stack>
 	);
 }
